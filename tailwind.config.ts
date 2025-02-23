@@ -11,6 +11,15 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        magnitude: {
+          micro: "#009600",
+          minor: "#52BC01",
+          light: "#A9DB00",
+          moderate: "#F5FF54",
+          strong: "#F7D822",
+          major: "#FE9A02",
+          great: "#FF0002",
+        },
       },
     },
   },
