@@ -11,6 +11,7 @@ import {
   activeEventPublicIDAtom,
   currentBoundsAtom,
   eventsAtom,
+  showSettingsModalAtom,
 } from "@/atoms/atoms";
 import { INITIAL_CENTER, INITIAL_ZOOM, MAX_ZOOM, MIN_ZOOM } from "@/constants";
 
@@ -18,6 +19,7 @@ export function Map() {
   const [activeFocus] = useAtom(activeEventPublicIDAtom);
   const [currentBounds, setCurrentBounds] = useAtom(currentBoundsAtom);
   const [events] = useAtom(eventsAtom);
+  const [_, setIsModalOpen] = useAtom(showSettingsModalAtom);
 
   const mapRef = useRef<L.Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
@@ -131,9 +133,19 @@ export function Map() {
   }, [currentBounds]);
 
   return (
-    <>
-      <div id="map-container" className="h-full" ref={mapContainerRef} />
-    </>
+    <div className="relative h-full w-full">
+      <div
+        id="map-container"
+        className="h-full w-full relative z-10"
+        ref={mapContainerRef}
+      />
+      <button
+        className="absolute top-4 right-4 z-50 bg-white p-2 rounded shadow"
+        onClick={() => setIsModalOpen(true)}
+      >
+        Edit Settings
+      </button>
+    </div>
   );
 }
 

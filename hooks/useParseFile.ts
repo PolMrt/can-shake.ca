@@ -1,13 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { useAtom } from "jotai";
 import { xml2js } from "xml-js";
-import { EarthquakeEvent } from "../models/EarthquakeEvent";
-import { currentBoundsAtom, eventsAtom } from "@/atoms/atoms";
+import { EarthquakeEvent } from "../type/_earthquakeEvent";
+import { currentBoundsAtom, eventsAtom, settingsAtom } from "@/atoms/atoms";
+import { Settings } from "@/type/settings";
+import { Bounds } from "@/type/bounds";
 
-const fetchEarthquakeData = async (bounds: any) => {
+const fetchEarthquakeData = async (bounds: Bounds, settings: Settings) => {
   const { minLatitude, maxLatitude, minLongitude, maxLongitude } = bounds;
   const data = await fetch(
-    `https://www.earthquakescanada.nrcan.gc.ca/fdsnws/event/1/query?starttime=2024-01-01T00:00:00&endtime=2025-12-01T00:00:00&minlatitude=${minLatitude}&maxlatitude=${maxLatitude}&minlongitude=${minLongitude}&maxlongitude=${maxLongitude}&minmagnitude=3`
+    `https://www.earthquakescanada.nrcan.gc.ca/fdsnws/event/1/query?starttime=${settings.startTime}&endtime=${settings.endTime}&minlatitude=${minLatitude}&maxlatitude=${maxLatitude}&minlongitude=${minLongitude}&maxlongitude=${maxLongitude}&minmagnitude=${settings.minMagnitude}`
   );
   const rawText = await data.text();
   const json = xml2js(rawText, { compact: true });
@@ -52,11 +54,12 @@ const fetchEarthquakeData = async (bounds: any) => {
 
 export const useParseFile = () => {
   const [currentBounds] = useAtom(currentBoundsAtom);
+  const [settings] = useAtom(settingsAtom);
   const [, setEvents] = useAtom(eventsAtom);
 
   return useQuery(
-    ["earthquakeData", currentBounds],
-    () => fetchEarthquakeData(currentBounds),
+    ["earthquakeData", currentBounds, settings],
+    () => fetchEarthquakeData(currentBounds as Bounds, settings as Settings),
     {
       keepPreviousData: true,
       onSuccess: (data) => {
